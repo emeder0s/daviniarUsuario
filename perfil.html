@@ -17,6 +17,8 @@
                 <input id="email-input" style="width: 100%;" placeholder="Email"></input>
                 <input id="password-input" style="width: 100%;" placeholder="Password"></input>
                 <button onclick="iniciarSesion()" type="button" class="btn btn-success">Iniciar Sesión</button>
+                <p>¿No estas registrado aún?</p>
+                <p>Regístrate</p>
             </div>
         </div>
         <!-- <button onclick="cerrarSesion()">Cerrar Sesión</button> -->
@@ -24,6 +26,7 @@
     <section>
         <div class="tab">
             <button class="tablinks" onclick="openContent(event, 'info-personal')" id="defaultOpen">Información personal</button>
+            <button class="tablinks" onclick="openContent(event, 'contraseña')">Cambiar contraseña</button>
             <button class="tablinks" onclick="openContent(event, 'points')">Daviniair points</button>
             <button class="tablinks" onclick="openContent(event, 'pago')">Métodos de pago</button>
             <button class="tablinks" onclick="openContent(event, 'historial')">Historial de compra</button>
@@ -36,36 +39,53 @@
                 <h2>Datos personales</h2>
                 <div>
                     <label for="nombre">Nombre</label>
-                    <input id="nombre"></input>
+                    <input id="nombre" type="text" class="info-personal-input"></input>
                 </div>
                 <div>
-                    <label>Apellido</label>
-                    <input id="apellido"></input>
+                    <label for="apellido">Apellido</label>
+                    <input id="apellido" type="text" class="info-personal-input"></input>
                 </div>
                 <div>
-                    <label>DNI</label>
-                    <input id="dni"></input>
+                    <label for="dni">DNI</label>
+                    <input id="dni" class="info-personal-input"></input>
                 </div>
                 <div>
-                    <label>Fecha de nacimiento</label>
-                    <input id="fecha-nac"></input>
+                    <label for="fechaNac">Fecha de nacimiento</label>
+                    <input id="fechaNac" class="info-personal-input"></input>
                 </div>
 
                 <h2>Datos de contacto</h2>
                 <div>
-                    <label>Email</label>
-                    <input id="email"></input>
+                    <label for="email">Email</label>
+                    <input id="email" type="email" class="info-personal-input"></input>
                 </div>
                 <div>
-                    <label>Telefono</label>
-                    <select id="extension"></select><input id="telefono"></input>
+                    <label for="telefono">Telefono</label>
+                    <select id="extension" class="info-personal-input">
+                        <option>+34</option>
+                        <option>+33</option>
+                        <option>+44</option>
+                    </select>
+                    <input id="telefono" class="info-personal-input"></input>
                 </div>
             </div>
             <button onclick="guardarDatos()">Guardar</button>
         </div>
-          
+        <div id="contraseña" class="tabcontent">
+            <h3>Cambiar contraseña</h3>
+            <div>
+                <label for="nuevaPassword">Nueva contraseña</label>
+                <input id="nuevaPassword" class="pass-input"></input>
+            </div>
+            <div>
+                <label for="password">Contraseña actual</label>
+                <input id="password" class="pass-input"></input>
+            </div>
+            <button onclick="guardarContraseña()">Guardar</button>
+        </div>
           <div id="points" class="tabcontent">
             <h3>Daviniair points</h3>
+            
           </div>
 
           <div id="pago" class="tabcontent">
@@ -75,9 +95,6 @@
           <div id="historial" class="tabcontent">
             <h3>Historial de compra</h3>
           </div>
-
-          
-
     </section>
     <script src="usuario.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

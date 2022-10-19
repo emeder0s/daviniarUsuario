@@ -1,12 +1,14 @@
 class Usuario {
-    constructor(nom,ape,dni,fecha,email,tel,pass){
+    constructor(nom,ape,dni,fechaNac,email,exTtel,tel,pass,points){
         this.nom = nom;
         this.ape = ape;
         this.dni = dni;
-        this.fechaNac = fecha;
+        this.fechaNac = fechaNac;
         this.email = email;
+        this.exTtel = exTtel;
         this.tel = tel;
         this.pass = pass;
+        this.points = points;
     }
 
     get nombre(){
@@ -23,7 +25,7 @@ class Usuario {
 
     set apellido(ape){
         this.ape = ape;
-   }
+    }
 
     get documentoIden(){
         return this.dni;
@@ -31,15 +33,15 @@ class Usuario {
 
     set documentoIden(dni){
         this.dni = dni;
-   }
+    }
 
     get fechaNacimiento(){
         return this.fechaNac;
     }
 
-    set fechaNacimiento(fecha){
-        this.fechaNac = fecha;
-   }
+    set fechaNacimiento(fechaNac){
+        this.fechaNac = fechaNac;
+    }
 
     get correo(){
         return this.email;
@@ -47,7 +49,7 @@ class Usuario {
 
     set correo(email){
         this.email = email;
-   }
+    }
 
     get telefono(){
         return this.tel;
@@ -55,14 +57,30 @@ class Usuario {
 
     set telefono(tel){
         this.tel = tel;
-   }
+    }
 
-   get password(){
-    return this.tel;
+    get extTelefono(){
+        return this.tel;
+    }
+
+    set extTelefono(exTtel){
+        this.exTtel = exTtel;
+    }
+
+    get password(){
+        return this.tel;
     }
 
     set password(pass){
         this.pass = pass;
+    }
+
+    get dPoints(){
+        return this.points;
+    }
+
+    set dPoints(points){
+        this.points = points;
     }
 
     comprobarPassword(password){
@@ -86,11 +104,14 @@ class Usuario {
             case "dni":
                 valor = this.dni;
                 break;
-            case "fecha-nac":
-                valor = this.fecha;
+            case "fechaNac":
+                valor = this.fechaNac;
                 break;
             case "email":
                 valor = this.email;
+                break;
+            case "extension":
+                valor = this.exTtel;
                 break;
             case "telefono":
                 valor = this.tel;
@@ -113,20 +134,22 @@ class Usuario {
             case "dni":
                 this.dni = valor;
                 break;
-            case "fecha-nac":
-                this.fecha = valor;
+            case "fechaNac":
+                this.fechaNac = valor;
                 break;
             case "email":
                 this.email = valor;
                 break;
+            case "extension":
+                this.exTtel = valor;
+                break;
             case "telefono":
                 this.tel = valor;
-                    break;  
+                break;    
             default:
                 break;
         }
     }
-
 }
 
 class Usuarios{
@@ -171,14 +194,19 @@ class Usuarios{
         return position
     }    
     
-    //Modifica el usuario
-    modificarUsuario(usuario, posicion){
+    //Modifica los datos personales del suario
+    modificarDatosPersonales(usuario, posicion){
         this.usuarios[posicion].nom = usuario.nom;
         this.usuarios[posicion].ape = usuario.ape;
         this.usuarios[posicion].dni = usuario.dni;
         this.usuarios[posicion].fechaNac = usuario.fechaNac;
         this.usuarios[posicion].email = usuario.email;
+        this.usuarios[posicion].exTtel = usuario.exTtel;
         this.usuarios[posicion].tel = usuario.tel;
+    }
+
+    modificarPassword(usuario, posicion){
+        this.usuarios[posicion].pass = usuario.pass;
     }
 
     guardarUsuarios(){
@@ -228,14 +256,15 @@ class Sesion{
 
 function inicializacion(){
     var usuarios = new Usuarios();
-    var user = new Usuario("elena","mederos","54058798N","18-02-1991","elena@gmail.com","+34686246095", "password");
-    var user2 = new Usuario("carlos","mederos","54058798N","18-02-1991","carlos@gmail.com","+34686246095", "password");
+    var user = new Usuario("elena","mederos","54058798N","18-02-1991","elena@gmail.com","+34","686246095", "password",3000);
+    var user2 = new Usuario("carlos","mederos","54058798N","18-02-1991","carlos@gmail.com","+34","686246095", "password",200);
     usuarios.añadirUsuario(user2);
     usuarios.añadirUsuario(user);
     // Quería usar el usuarios.guardarUSuarios(), pero si lo usaba no me debaja iniciar sesión.. por qué? No lo he descubierto
     localStorage.setItem("usuarios", JSON.stringify(usuarios))
+    deshabilitarEdicion();
+    document.getElementById("defaultOpen").click();
 }
-
 
 //Muestra un mensaje de error por el console.log
 function mostrarMensaje(mensaje){
@@ -278,12 +307,12 @@ function iniciarSesion(){
 
     var usuarioJSON = usuarios.existeUsuario(email);
     var usuario = new Usuario();
-    usuario = usuario.fromJsonToUsuario(usuarioJSON)
-
+    usuario = usuario.fromJsonToUsuario(usuarioJSON);
     if (usuario){
         if (usuario.comprobarPassword(password)){
            var sesion = new Sesion("open", usuario);
            sesion.guardarSesion();
+           mostrarDatos();
         }else{
             var mensaje = "Login incorrecto";
             mostrarMensaje(mensaje);
@@ -302,12 +331,29 @@ function cerrarSesion(){
 }
 
 function mostrarDatos(){
+    var sesion = sesionFromLocalStorage();
+    var usuario = usuarioFromSesion(sesion);
+    var inputs = document.querySelectorAll(".info-personal-input");
+    inputs.forEach(input => {
+        document.querySelector(`#${input.id}`).value = usuario.devolverAtributo(input.id);
+    })
+}
 
+function guardarDatosEnLocalStorage(usuarios,usuario,sesion,tipoDato){
+        //actualiza el usuario de la sesion
+        sesion.usuario = usuario;
+        sesion.guardarSesion();
+        //actualizar el array de usuarios --> puedo buscar el usuario y luego modificarlo con las funciones que ya tengo pensadas arriba
+        console.log(usuarios.buscarUsuario(usuario));
+        tipoDato == "personales" ? usuarios.modificarDatosPersonales(usuario, usuarios.buscarUsuario(usuario)) : usuarios.modificarPassword(usuario, usuarios.buscarUsuario(usuario));
+        
+        usuarios.guardarUsuarios();
 }
 
 function guardarDatos(){
     var sesion = sesionFromLocalStorage();
-    var datos = document.querySelectorAll("#info-personal-container input");
+    //CAMBIAR LA CLASE PARA QUE COJA EL SELECT TB!!!!!
+    var datos = document.querySelectorAll(".info-personal-input");
     var usuario = usuarioFromSesion(sesion);
     var usuarios = usuariosFromLocalStorage();
     datos.forEach( input => {
@@ -317,13 +363,27 @@ function guardarDatos(){
         }
     });
 
-    //actualiza el usuario de la sesion
-    sesion.usuario = usuario;
-    sesion.guardarSesion();
+    guardarDatosEnLocalStorage(usuarios,usuario,sesion,"personales");
+}
 
-    //actualizar el array de usuarios --> puedo buscar el usuario y luego modificarlo con las funciones que ya tengo pensadas arriba
-    usuarios.modificarUsuario(usuario, usuarios.buscarUsuario(usuario));
-    usuarios.guardarUsuarios();
+function guardarContraseña(){
+    var sesion = sesionFromLocalStorage();
+    var usuario = usuarioFromSesion(sesion);
+    var usuarios = usuariosFromLocalStorage();
+    var contraseñaNueva = document.querySelector("#nuevaPassword.pass-input").value;
+    var contraseñaActual = document.querySelector("#password.pass-input").value;
+    if (usuario.comprobarPassword(contraseñaActual)){
+        if (usuario.comprobarPassword(contraseñaNueva)){
+            var mensaje = "La contraseña nueva no puede ser igual a la anterior";
+            mostrarMensaje(mensaje);
+        }else{
+            usuario.pass = contraseñaNueva;
+            guardarDatosEnLocalStorage(usuarios,usuario,sesion,"password");
+        }
+    }else{
+        var mensaje = "La contraseña actual no coincide";
+        mostrarMensaje(mensaje);
+    }
 }
 
 //Cambia el contenido que se muestra
@@ -342,15 +402,19 @@ function openContent(evt, id) {
   }
  
 function habilitarEdicion(){
-    var inputs = document.querySelectorAll("#info-personal-container input");
+    var inputs = document.querySelectorAll(".info-personal-input");
     inputs.forEach(input => {
-        input.ariaReadOnly = false;
+        input.readOnly = false;
     });   
 }
 
+function deshabilitarEdicion(){
+    var inputs = document.querySelectorAll(".info-personal-input");
+    inputs.forEach(input => {
+        input.readOnly = true;
+    });   
+}
+
+ 
   // Get the element with id="defaultOpen" and click on it
-  document.getElementById("defaultOpen").click();
-
-//   document.getElementById("myText").readOnly = true;
-
 inicializacion();
